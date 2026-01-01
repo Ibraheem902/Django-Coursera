@@ -28,7 +28,10 @@ class Dev(Configuration):
     # SECURITY WARNING: don't run with debug turned on in production!
     DEBUG = values.BooleanValue(True)
 
-    ALLOWED_HOSTS = values.ListValue(['localhost'])
+    ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost"
+]
 
     CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
     CRISPY_TEMPLATE_PACK = "bootstrap5"
@@ -87,7 +90,6 @@ class Dev(Configuration):
     ),
 }
 
-
     # Password validation
     # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
@@ -123,6 +125,44 @@ class Dev(Configuration):
     # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
     STATIC_URL = 'static/'
+    LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "require_debug_false": {
+            "()": "django.utils.log.RequireDebugFalse",
+        },
+    },
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+            "formatter": "verbose",
+        },
+        "mail_admins": {
+            "level": "ERROR",
+            "class": "django.utils.log.AdminEmailHandler",
+            "filters": ["require_debug_false"],
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["mail_admins"],
+            "level": "ERROR",
+            "propagate": True,
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+}
 class Prod(Dev):
     DEBUG=False
     SECRET_KEY=values.SecretValue()
